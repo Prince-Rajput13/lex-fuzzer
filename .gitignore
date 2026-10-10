@@ -1,0 +1,10 @@
+lexer
+lexer_asan
+lexer_cov
+lex.yy.c
+*.gcda
+*.gcno
+*.gcov
+__pycache__/
+findings/*
+!findings/.gitkeep
