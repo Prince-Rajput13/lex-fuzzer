@@ -1,4 +1,5 @@
 """Fuzz harness: run the lexer on generated inputs and classify every result.
+
 Statuses
   OK         lexer output equals Clang's raw tokens, no crash, no sanitizer report
   MISMATCH   token streams differ (the interesting differential-testing result)
@@ -23,11 +24,8 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from fuzz import gen, normalize
 
-SAN_MARKERS = (b"AddressSanitizer",
-               b"LeakSanitizer",
-               b"UndefinedBehaviorSanitizer",
-               b"runtime error")
-
+SAN_MARKERS = (b"AddressSanitizer", b"LeakSanitizer", b"UndefinedBehaviorSanitizer", b"runtime error")
+CLANG_CMD = ["clang", "-Xclang", "-dump-raw-tokens", "-fsyntax-only", "-x", "c"]
 
 
 def sanitizer_env(leaks):
@@ -98,7 +96,11 @@ def save_finding(outdir, status, data, detail, ours, ref):
     return True
 
 
-
+def clang_version():
+    try:
+        return subprocess.run(["clang", "--version"], capture_output=True, text=True).stdout.splitlines()[0]
+    except Exception:
+        return "unknown"
 
 
 def main():
